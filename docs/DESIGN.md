@@ -2,7 +2,7 @@
 
 ## Source authority
 
-The maintenance candidate is based on public commit `7bc775a3ec5dfe5561ed65f05e18d5958d166bbf`, tree `8b343965b9c307a3a4b6d79a6335af2b51d9eac3`. The packaged original v1.0 source plus the exact README/screenshot update reconstruct that tree. Previous passing tests and successful Pages builds are historical evidence, not proof of candidate correctness.
+The v1.1.0 feature candidate starts from published v1.0.1 commit `909b5a7d4eb510e805074cf6f64f6bf9d211896e`. Historical passing tests and Pages deployment are baseline evidence, not proof that the local v1.1 candidate is correct.
 
 ## Validated domain
 
@@ -27,6 +27,16 @@ Internal neighbor traversal reuses the already validated grid rather than clonin
 The versioned LCG generator preserves the prior rejection stream for ordinary inputs, including the historical seed-42 scenario. It no longer maps seed 0 to seed 1. With positive demand, zero-frequency SKUs are not selected; if all demand is zero, sampling is uniform. After 1,000 unsuccessful duplicate-avoidance draws for an order, selection continues from the remaining eligible SKUs. It never returns fewer distinct lines than requested merely because the retry counter expired. An explicit workload limit can stop the entire run.
 
 Embedded scenario orders take precedence and are validated, not silently replaced. The same resulting order list is routed for both allocations. The generator version and exact orders are saved in the export.
+
+## Multi-seed robustness analysis
+
+v1.1 adds a second analysis layer for scenarios that use generated orders. Starting from the displayed unsigned seed, it evaluates consecutive seeds with uint32 wraparound. Each seed regenerates a deterministic order list from the same order-count and maximum-line settings while keeping the current and suggested assignments fixed.
+
+For each seed the simulator records current total cost, suggested total cost, modeled reduction and improved/unchanged/worsened order counts. The aggregate records mean, median, minimum and maximum modeled reduction plus positive/zero/negative seed counts.
+
+The feature accepts 2–20 seeds and at most 20,000 sampled orders in total. Fixed-order scenarios are rejected for multi-seed analysis rather than being relabeled as generated samples.
+
+Consecutive pseudo-random seeds are deterministic sensitivity samples. They are not a confidence interval, probability estimate, calibrated demand forecast or evidence of real warehouse savings.
 
 ## Browser state
 

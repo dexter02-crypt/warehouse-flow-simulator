@@ -9,12 +9,14 @@
   "src/domain/sku.js",
   "src/domain/warehouse.js",
   "src/io/report.js",
+  "src/io/robustness-report.js",
   "src/io/scenario.js",
   "src/routing/grid.js",
   "src/routing/picking.js",
   "src/routing/search.js",
   "src/simulation/compare.js",
   "src/simulation/metrics.js",
+  "src/simulation/robustness.js",
   "src/slotting/constraints.js",
   "src/slotting/optimizer.js"
 ]

@@ -2,9 +2,9 @@
 <meta name="description" content="End-to-end warehouse slotting, picking route and order-flow simulation experiment.">
 <title>Warehouse Flow Simulator</title><link rel="icon" href="data:,"><link rel="stylesheet" href="styles.css"></head>
 <body><main>
-<header><div><div class="eyebrow">Operations + algorithms · v1.0.1 candidate</div><h1>Warehouse<br>Flow Simulator</h1></div>
+<header><div><div class="eyebrow">Operations + algorithms · v1.1.0 candidate</div><h1>Warehouse<br>Flow Simulator</h1></div>
 <div><p class="muted">Slot SKUs, route multi-stop orders, and compare the same deterministic order set before and after optimization.</p>
-<nav class="nav"><a href="#layout">Layout</a><a href="#slotting">Slotting</a><a href="#simulation">Simulation</a></nav></div></header>
+<nav class="nav"><a href="#layout">Layout</a><a href="#slotting">Slotting</a><a href="#simulation">Simulation</a><a href="#robustness">Robustness</a></nav></div></header>
 <p id="status" class="status" role="status" aria-live="polite">Loading scenario…</p>
 <section id="layout" class="section grid">
 <div class="card span8"><h2>Current layout</h2><svg id="currentMap" viewBox="0 0 900 600"></svg><div class="legend"><span><i class="dot" style="background:#36506f"></i>walkway</span><span><i class="dot" style="background:#111722"></i>wall</span><span><i class="dot" style="background:#8ad7ff"></i>ambient slot</span><span><i class="dot" style="background:#b99cff"></i>cold slot</span><span><i class="dot" style="background:#7ee2b8"></i>route</span></div></div>
@@ -29,6 +29,18 @@
 <div class="card span5"><h2>Order outcomes</h2><div id="outcomes" class="metric"></div><p class="muted">Improved · unchanged · worsened</p></div>
 <div class="card span7"><h2>Selected order replay</h2><p id="replayText" class="muted">Run the simulation to display the first order on the suggested layout.</p><svg id="replayMap" viewBox="0 0 900 600"></svg></div>
 <div class="card span12"><h2>First ten simulated orders</h2><table><thead><tr><th>Order</th><th>SKUs</th><th>Current</th><th>Suggested</th><th>Δ</th></tr></thead><tbody id="orderTable"></tbody></table></div>
+</section>
+<section id="robustness" class="section grid">
+<div class="card span12"><h2>Multi-seed robustness analysis</h2><p class="muted">Repeat the generated-order comparison across consecutive deterministic seeds. This tests sensitivity inside the simulator; it is not a confidence interval, demand forecast or real-world savings claim.</p><div class="controls">
+<label>Seeds<input id="robustnessRuns" type="number" min="2" max="20" step="1" value="5"></label>
+<button id="runRobustness" class="primary" disabled>Run robustness analysis</button>
+<button id="exportRobustness" disabled>Export robustness JSON</button>
+</div><p id="robustnessSource" class="muted"></p></div>
+<div class="card span3"><div class="eyebrow">Mean reduction</div><div id="robustnessMean" class="metric"></div></div>
+<div class="card span3"><div class="eyebrow">Median reduction</div><div id="robustnessMedian" class="metric"></div></div>
+<div class="card span3"><div class="eyebrow">Seed range</div><div id="robustnessRange" class="metric"></div></div>
+<div class="card span3"><div class="eyebrow">Seed outcomes</div><div id="robustnessOutcomes" class="metric"></div><p class="muted">Positive · zero · negative</p></div>
+<div class="card span12"><h2>Per-seed results</h2><table><thead><tr><th>Seed</th><th>Current total</th><th>Suggested total</th><th>Reduction</th><th>Improved · unchanged · worsened</th></tr></thead><tbody id="robustnessTable"></tbody></table></div>
 </section>
 <footer>All travel results are weighted grid-entry cost, not metres, seconds or labor savings. This is a transparent teaching simulator, not a WMS, digital twin or deployable slotting recommendation. It omits congestion, replenishment labor, picker interference, one-way aisles, service-time distributions and many facility-specific constraints.</footer>
 <script type="module" src="src/app.js"></script></main></body></html>

@@ -1,9 +1,11 @@
 # Candidate validation
 
-Warehouse Flow Simulator 1.0.1 maintenance candidate, based on public commit `7bc775a3ec5dfe5561ed65f05e18d5958d166bbf`.
+Warehouse Flow Simulator v1.1.0 feature candidate, based on published v1.0.1 commit `909b5a7d4eb510e805074cf6f64f6bf9d211896e`.
 
-128 JavaScript application tests and 30 Python tooling/server tests passed with no skips in the review environment. All 79 original application methods were retained unchanged. The separate repair delivery has its own helper tests and browser-harness evidence.
+Current local evidence includes 150 JavaScript tests and 30 Python tooling/server tests with no failures. The browser robustness flow exported a five-seed report covering 5,000 sampled orders, and `tools/reproduce-robustness.mjs` independently recomputed it with `"verified": true`.
 
-Run `python3 -B tools/check.py` for the full local check. `npm test` runs only JavaScript tests.
+The v1.0.1 single-run report contract remains supported. The new robustness report uses engine version 1.1.0.
 
-See [the detailed boundaries](docs/VALIDATION.md) and [reliability findings](docs/RELIABILITY.md). The repair's remote CI, real Mac browser and updated Pages deployment remain unverified until the candidate is applied and tested there. No release/tag or repository write was performed by the review.
+Run `python3 -B tools/check.py` for the strict integrity-bound local check after rebuilding `INTEGRITY.json`.
+
+A passing local check does not establish remote branch, PR, merge, tag, release, post-merge CI or Pages success.

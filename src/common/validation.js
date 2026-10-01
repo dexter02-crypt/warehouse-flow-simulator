@@ -1,5 +1,6 @@
 /** Explicit model bounds. Values are numbers, not coercible strings or booleans. */
 export const LIMITS = Object.freeze({ skus: 5000, slots: 500, orders: 10000, lines: 25,
+  robustnessSeeds: 20, robustnessOrders: 20_000,
   quantity: 1e9, scenarioBytes: 1024 * 1024, reportBytes: 16 * 1024 * 1024,
   simulationWork: 20_000_000, matchingWork: 10_000_000, generatorWork: 20_000_000 });
 export function record(value, name) {
