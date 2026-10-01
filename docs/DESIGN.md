@@ -2,7 +2,7 @@
 
 ## Source authority
 
-The v1.1.0 feature candidate starts from published v1.0.1 commit `909b5a7d4eb510e805074cf6f64f6bf9d211896e`. Historical passing tests and Pages deployment are baseline evidence, not proof that the local v1.1 candidate is correct.
+v1.1.0 builds on published v1.0.1 commit `909b5a7d4eb510e805074cf6f64f6bf9d211896e`; the robustness feature was integrated through PR #1. Passing tests and Pages deployments are evidence for the exact commits they ran on, not proof of correctness for later changes.
 
 ## Validated domain
 
@@ -58,4 +58,4 @@ Grid: 48×32, at most 500 slots. SKU inputs: at most 5,000, but a complete one-p
 
 The server binds to loopback and serves only `ASSETS.json` members. Host/Origin checks and symlink rejection narrow accidental exposure. The server still depends on trusted local source and a stable local filesystem. Python's basic HTTP implementation is not an internet-facing production server; Pages does not inherit these local headers.
 
-The release check uses real explicit Node test paths, `shell=False`, closed standard input and exit-status propagation. It then runs Python tooling/server tests. Initial-publication functionality is retired because this repository already exists. Updates are ordinary separately reviewed commits; this candidate does not change remote Git state, visibility, release tags, Pages configuration or another repository.
+The release check uses real explicit Node test paths, `shell=False`, closed standard input and exit-status propagation. It then runs Python tooling/server tests. Initial-publication functionality is retired because this repository already exists. Updates are ordinary separately reviewed commits. Release publication is a separate explicit GitHub action performed only after the exact main commit passes Core tests and Pages deployment.
