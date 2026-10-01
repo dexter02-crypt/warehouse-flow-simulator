@@ -4,11 +4,11 @@ An end-to-end browser experiment that connects warehouse slotting with multi-sto
 
 **Live demo:** https://dexter02-crypt.github.io/warehouse-flow-simulator/
 
-**Latest published release:** [v1.0.1](https://github.com/dexter02-crypt/warehouse-flow-simulator/releases/tag/v1.0.1)
+**Version:** v1.1.0 · [Release history](https://github.com/dexter02-crypt/warehouse-flow-simulator/releases)
 
 ![Warehouse Flow Simulator end-to-end slotting, routing and order simulation](docs/demo.png)
 
-The screenshot records the original v1.0 example. The v1.0.1 maintenance release strengthened validation, bounded work, error handling and reproducible single-run reports while retaining the standard seed-42 result. The current v1.1.0 feature candidate adds bounded multi-seed robustness analysis. A local candidate is not deployed until it is reviewed, committed, pushed and successfully built.
+The screenshot records the original v1.0 example. The v1.0.1 maintenance release strengthened validation, bounded work, error handling and reproducible single-run reports while retaining the standard seed-42 result. v1.1.0 adds bounded multi-seed robustness analysis while preserving that single-run reference.
 
 ## What it combines
 

@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.0 — feature candidate, 2026-10-01
+## 1.1.0 — 2026-10-01
 
 - Added bounded deterministic multi-seed robustness analysis for generated-order scenarios.
 - Added 2–20 consecutive-seed runs with a maximum of 20,000 sampled orders across the analysis.
@@ -9,7 +9,7 @@
 - Added browser controls, results, per-seed table and robustness JSON export.
 - Preserved the v1.0.1 single-run report contract and the historical seed-42 reference.
 
-## 1.0.1 — maintenance candidate, 2026-10-01
+## 1.0.1 — 2026-10-01
 
 - Replaced the false-success publisher test invocation with explicit test filenames, no shell and failure propagation; retired initial repository creation.
 - Validated complete current/suggested allocations for single occupancy, compatibility and depot reachability.
@@ -21,7 +21,7 @@
 - Added self-contained report capture and local recomputation checks.
 - Restricted the development server to approved runtime assets and excluded private paths/symlinks.
 - Retained all 79 original test methods unchanged and added focused application, tooling and server regressions.
-- Kept the v1.0.0 release link and historical screenshot. No release/tag creation is part of this candidate.
+- Published v1.0.1 without moving the v1.0.0 tag; retained the historical screenshot and prior release.
 
 ## 1.0.0 — 2026-10-01
 

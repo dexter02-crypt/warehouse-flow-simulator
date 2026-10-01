@@ -1,4 +1,4 @@
-# Validation — 1.1.0 feature candidate
+# Validation — 1.1.0
 
 ## Executed local checks
 
@@ -24,6 +24,8 @@ The Python server tests independently exercise loopback HTTP behavior, allowlist
 
 The robustness feature measures sensitivity to several deterministic generated order samples. It is not a confidence interval, probability of future savings, calibrated demand forecast or production warehouse recommendation.
 
-## Publication boundary
+## Publication evidence
 
-The feature branch has been published, and push-triggered Core tests passed for the implementation commit. Pull-request creation, merge, v1.1.0 tag creation, GitHub release publication, post-merge CI success and post-merge Pages deployment remain pending and require separate evidence against the exact commits involved.
+PR #1 integrated the robustness feature to `main` at commit `39d525ca8acd530e6845b89307097e82c1ab8c66`. Post-merge Core tests run `36856129750` and Pages deployment run `36856128722` both completed successfully on that exact implementation merge commit.
+
+The v1.1.0 release tag must point to the final reviewed `main` commit after release-state documentation is integrated and Core tests plus Pages deployment succeed on that exact commit. Historical tags and releases remain immutable.
