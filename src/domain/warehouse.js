@@ -1,3 +1,22 @@
-import {validateGrid} from "../routing/grid.js";
-export function validateWarehouse(raw){if(!raw||typeof raw!=="object")throw new Error("warehouse");const grid=validateGrid(raw.grid),depot=Number(raw.depot);if(!Number.isInteger(depot)||depot<0||depot>=grid.cells.length||!grid.cells[depot])throw new Error("depot");if(!Array.isArray(raw.slots)||raw.slots.length<1||raw.slots.length>500)throw new Error("slots");const ids=new Set(),indexes=new Set();const slots=raw.slots.map((s,i)=>{const id=String(s?.id??"").trim(),index=Number(s?.index),zone=String(s?.zone??"ambient").trim(),capacity=Number(s?.capacity??1),maxWeight=Number(s?.maxWeight??1);if(!id||id.length>40||ids.has(id))throw new Error(`slot-id:${i}`);if(!Number.isInteger(index)||index<0||index>=grid.cells.length||!grid.cells[index]||index===depot||indexes.has(index))throw new Error(`slot-index:${i}`);if(!zone||zone.length>32||!Number.isFinite(capacity)||capacity<=0||!Number.isFinite(maxWeight)||maxWeight<=0)throw new Error(`slot-data:${i}`);ids.add(id);indexes.add(index);return {id,index,zone,capacity,maxWeight};});return {grid,depot,slots};}
-export function slotMap(warehouse){const w=validateWarehouse(warehouse);return new Map(w.slots.map(s=>[s.id,s]));}
+import { validateGrid, validateIndex } from '../routing/grid.js';
+import { record, denseArray, text, positive, LIMITS } from '../common/validation.js';
+
+export function validateWarehouse(raw) {
+  record(raw, 'warehouse');
+  const grid = validateGrid(raw.grid), depot = validateIndex(grid, raw.depot, true);
+  denseArray(raw.slots, 'slots', 1, LIMITS.slots);
+  const ids = new Set(), indexes = new Set();
+  const slots = raw.slots.map((item, i) => {
+    record(item, `slot ${i}`);
+    const id = text(item.id, 'slot id', 40), index = validateIndex(grid, item.index, true);
+    const zone = text(item.zone === undefined ? 'ambient' : item.zone, 'slot zone', 32);
+    const capacity = positive(item.capacity === undefined ? 1 : item.capacity, 'slot capacity');
+    const maxWeight = positive(item.maxWeight === undefined ? 1 : item.maxWeight, 'maximum slot weight');
+    if (ids.has(id)) throw new Error(`Duplicate slot id: ${id}`);
+    if (index === depot || indexes.has(index)) throw new Error(`Slot ${id} overlaps the depot or another slot.`);
+    ids.add(id); indexes.add(index);
+    return { id, index, zone, capacity, maxWeight };
+  });
+  return { grid, depot, slots };
+}
+export function slotMap(raw) { return new Map(validateWarehouse(raw).slots.map(s => [s.id, s])); }

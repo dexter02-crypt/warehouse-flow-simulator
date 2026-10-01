@@ -1,0 +1,20 @@
+[
+  "index.html",
+  "styles.css",
+  "examples/warehouse-scenario.json",
+  "src/app.js",
+  "src/common/validation.js",
+  "src/domain/assignments.js",
+  "src/domain/orders.js",
+  "src/domain/sku.js",
+  "src/domain/warehouse.js",
+  "src/io/report.js",
+  "src/io/scenario.js",
+  "src/routing/grid.js",
+  "src/routing/picking.js",
+  "src/routing/search.js",
+  "src/simulation/compare.js",
+  "src/simulation/metrics.js",
+  "src/slotting/constraints.js",
+  "src/slotting/optimizer.js"
+]

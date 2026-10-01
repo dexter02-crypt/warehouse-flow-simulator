@@ -1,4 +1,27 @@
-export function validateSkus(rows){if(!Array.isArray(rows)||rows.length<1||rows.length>5000)throw new Error("skus");const ids=new Set();return rows.map((r,i)=>{const sku=String(r?.sku??"").trim(),picksPerDay=Number(r?.picksPerDay),size=Number(r?.size??1),weight=Number(r?.weight??1),zone=String(r?.zone??"ambient").trim(),demandCV=Number(r?.demandCV??0.25),slotId=String(r?.slotId??"").trim();if(!sku||sku.length>64||ids.has(sku))throw new Error(`sku-id:${i}`);if(!Number.isFinite(picksPerDay)||picksPerDay<0||!Number.isFinite(size)||size<=0||!Number.isFinite(weight)||weight<=0||!zone||zone.length>32||!Number.isFinite(demandCV)||demandCV<0||!slotId)throw new Error(`sku-data:${i}`);ids.add(sku);return {sku,picksPerDay,size,weight,zone,demandCV,slotId};});}
-export function classifyABC(rows){const skus=validateSkus(rows).sort((a,b)=>b.picksPerDay-a.picksPerDay||a.sku.localeCompare(b.sku));const total=skus.reduce((s,x)=>s+x.picksPerDay,0);let cum=0;return skus.map(x=>{const before=cum/(total||1);cum+=x.picksPerDay;return {...x,abc:before<0.8?"A":before<0.95?"B":"C",cumulativeShare:total?cum/total:0};});}
-export function xyzClass(cv){const x=Number(cv);if(!Number.isFinite(x)||x<0)throw new Error("demandCV");return x<=0.5?"X":x<=1?"Y":"Z";}
-export function classifySkus(rows){return classifyABC(rows).map(x=>({...x,xyz:xyzClass(x.demandCV)}));}
+import { record, denseArray, text, number, positive, compareText, LIMITS } from '../common/validation.js';
+
+export function validateSkus(rows) {
+  denseArray(rows, 'skus', 1, LIMITS.skus); const ids = new Set();
+  return rows.map((raw, i) => {
+    record(raw, `SKU ${i}`);
+    const sku = text(raw.sku, 'SKU id'), slotId = text(raw.slotId, 'current slot id', 40);
+    if (ids.has(sku)) throw new Error(`Duplicate SKU: ${sku}`); ids.add(sku);
+    const picksPerDay = number(raw.picksPerDay, 'picks per day');
+    const size = positive(raw.size === undefined ? 1 : raw.size, 'SKU size');
+    const weight = positive(raw.weight === undefined ? 1 : raw.weight, 'SKU weight');
+    const zone = text(raw.zone === undefined ? 'ambient' : raw.zone, 'SKU zone', 32);
+    const demandCV = number(raw.demandCV === undefined ? 0.25 : raw.demandCV, 'demand CV');
+    return { sku, picksPerDay, size, weight, zone, demandCV, slotId };
+  });
+}
+export function classifyABC(rows) {
+  const skus = validateSkus(rows).sort((a, b) => b.picksPerDay - a.picksPerDay || compareText(a.sku, b.sku));
+  const total = skus.reduce((s, x) => s + x.picksPerDay, 0); let cum = 0;
+  return skus.map(x => {
+    const before = total ? cum / total : 0; cum += x.picksPerDay;
+    return { ...x, abc: !total || !x.picksPerDay ? 'C' : before < 0.8 ? 'A' : before < 0.95 ? 'B' : 'C',
+      cumulativeShare: total ? cum / total : 0 };
+  });
+}
+export function xyzClass(cv) { number(cv, 'demand CV'); return cv <= 0.5 ? 'X' : cv <= 1 ? 'Y' : 'Z'; }
+export function classifySkus(rows) { return classifyABC(rows).map(x => ({ ...x, xyz: xyzClass(x.demandCV) })); }

@@ -1,484 +1,778 @@
 TAP version 13
-# Subtest: A* shortest path on empty grid
-ok 1 - A* shortest path on empty grid
+# Subtest: current assignment rejects duplicate occupancy
+ok 1 - current assignment rejects duplicate occupancy
   ---
-  duration_ms: 1.506419
+  duration_ms: 5.0844
+  type: 'test'
+  ...
+# Subtest: current assignment rejects incompatible zone
+ok 2 - current assignment rejects incompatible zone
+  ---
+  duration_ms: 0.879324
+  type: 'test'
+  ...
+# Subtest: current assignment rejects oversized SKU
+ok 3 - current assignment rejects oversized SKU
+  ---
+  duration_ms: 1.066727
+  type: 'test'
+  ...
+# Subtest: current assignment rejects overweight SKU
+ok 4 - current assignment rejects overweight SKU
+  ---
+  duration_ms: 0.911603
+  type: 'test'
+  ...
+# Subtest: current assignment rejects disconnected occupied slot
+ok 5 - current assignment rejects disconnected occupied slot
+  ---
+  duration_ms: 1.067799
+  type: 'test'
+  ...
+# Subtest: unoccupied unreachable slots do not invalidate reachable allocations
+ok 6 - unoccupied unreachable slots do not invalidate reachable allocations
+  ---
+  duration_ms: 1.643536
+  type: 'test'
+  ...
+# Subtest: assignment validation rejects missing and extra keys
+ok 7 - assignment validation rejects missing and extra keys
+  ---
+  duration_ms: 0.455617
+  type: 'test'
+  ...
+# Subtest: picking cannot bypass assignment compatibility
+ok 8 - picking cannot bypass assignment compatibility
+  ---
+  duration_ms: 0.919896
+  type: 'test'
+  ...
+# Subtest: picking rejects duplicate lines before routing
+ok 9 - picking rejects duplicate lines before routing
+  ---
+  duration_ms: 1.642986
+  type: 'test'
+  ...
+# Subtest: feasible greedy trap is repaired by reassignment
+ok 10 - feasible greedy trap is repaired by reassignment
+  ---
+  duration_ms: 1.458317
+  type: 'test'
+  ...
+# Subtest: infeasible complete matching is reported as infeasible
+ok 11 - infeasible complete matching is reported as infeasible
+  ---
+  duration_ms: 0.539633
+  type: 'test'
+  ...
+# Subtest: not enough physical slots fails before a partial allocation is returned
+ok 12 - not enough physical slots fails before a partial allocation is returned
+  ---
+  duration_ms: 0.155544
+  type: 'test'
+  ...
+# Subtest: optimizer returns deterministic assignments without mutating inputs
+ok 13 - optimizer returns deterministic assignments without mutating inputs
+  ---
+  duration_ms: 1.519479
+  type: 'test'
+  ...
+# Subtest: null boolean and numeric-string model quantities are rejected
+ok 14 - null boolean and numeric-string model quantities are rejected
+  ---
+  duration_ms: 0.335966
+  type: 'test'
+  ...
+# Subtest: null positions cannot silently become cell zero
+ok 15 - null positions cannot silently become cell zero
+  ---
+  duration_ms: 0.195925
+  type: 'test'
+  ...
+# Subtest: overflowing demand values are rejected
+ok 16 - overflowing demand values are rejected
+  ---
+  duration_ms: 0.140302
+  type: 'test'
+  ...
+# Subtest: all-zero demand has C class rather than invented A priorities
+ok 17 - all-zero demand has C class rather than invented A priorities
+  ---
+  duration_ms: 0.202675
+  type: 'test'
+  ...
+# Subtest: identifier text remains text without coerced objects
+ok 18 - identifier text remains text without coerced objects
+  ---
+  duration_ms: 0.156245
+  type: 'test'
+  ...
+# Subtest: sparse grid is rejected
+ok 19 - sparse grid is rejected
+  ---
+  duration_ms: 0.116115
+  type: 'test'
+  ...
+# Subtest: sparse SKU array is rejected
+ok 20 - sparse SKU array is rejected
+  ---
+  duration_ms: 0.322146
+  type: 'test'
+  ...
+# Subtest: singleton path still validates its index and walkability
+ok 21 - singleton path still validates its index and walkability
+  ---
+  duration_ms: 0.286672
+  type: 'test'
+  ...
+# Subtest: a valid empty path costs zero and malformed path is rejected
+ok 22 - a valid empty path costs zero and malformed path is rejected
+  ---
+  duration_ms: 0.157627
+  type: 'test'
+  ...
+# Subtest: scenario text size limit applies before JSON parsing
+ok 23 - scenario text size limit applies before JSON parsing
+  ---
+  duration_ms: 0.167513
+  type: 'test'
+  ...
+# Subtest: orders cannot use objects in place of ids or SKU values
+ok 24 - orders cannot use objects in place of ids or SKU values
+  ---
+  duration_ms: 0.299481
+  type: 'test'
+  ...
+# Subtest: seed must be an unsigned integer and is not silently aliased
+ok 25 - seed must be an unsigned integer and is not silently aliased
+  ---
+  duration_ms: 0.347023
+  type: 'test'
+  ...
+# Subtest: zero seed and one seed have distinct deterministic streams
+ok 26 - zero seed and one seed have distinct deterministic streams
+  ---
+  duration_ms: 1.561753
+  type: 'test'
+  ...
+# Subtest: skewed demand completes requested unique-line counts
+ok 27 - skewed demand completes requested unique-line counts
+  ---
+  duration_ms: 5.718024
+  type: 'test'
+  ...
+# Subtest: zero demand SKU is not sampled among positive demand SKUs
+ok 28 - zero demand SKU is not sampled among positive demand SKUs
+  ---
+  duration_ms: 0.256105
+  type: 'test'
+  ...
+# Subtest: all-zero demand uses uniform sampling and fills lines
+ok 29 - all-zero demand uses uniform sampling and fills lines
+  ---
+  duration_ms: 0.218248
+  type: 'test'
+  ...
+# Subtest: generator does not mutate demand rows
+ok 30 - generator does not mutate demand rows
+  ---
+  duration_ms: 0.263387
+  type: 'test'
+  ...
+# Subtest: distance-cache results are immutable
+ok 31 - distance-cache results are immutable
+  ---
+  duration_ms: 0.3982
+  type: 'test'
+  ...
+# Subtest: oracle from a different graph cannot corrupt routing
+ok 32 - oracle from a different graph cannot corrupt routing
+  ---
+  duration_ms: 0.422116
+  type: 'test'
+  ...
+# Subtest: unknown algorithm fails at oracle construction
+ok 33 - unknown algorithm fails at oracle construction
+  ---
+  duration_ms: 0.13922
+  type: 'test'
+  ...
+# Subtest: metrics reject NaN infinity strings and negative cost
+ok 34 - metrics reject NaN infinity strings and negative cost
+  ---
+  duration_ms: 0.236476
+  type: 'test'
+  ...
+# Subtest: async and sync comparison outputs agree
+ok 35 - async and sync comparison outputs agree
+  ---
+  duration_ms: 19.372194
+  type: 'test'
+  ...
+# Subtest: default 1000-order scenario retains exact prior totals and outcomes
+ok 36 - default 1000-order scenario retains exact prior totals and outcomes
+  ---
+  duration_ms: 56.391134
+  type: 'test'
+  ...
+# Subtest: default report exports every input needed for replay
+ok 37 - default report exports every input needed for replay
+  ---
+  duration_ms: 3.485371
+  type: 'test'
+  ...
+# Subtest: JSON round-trip reproduces recorded results from inputs
+ok 38 - JSON round-trip reproduces recorded results from inputs
+  ---
+  duration_ms: 21.144004
+  type: 'test'
+  ...
+# Subtest: all three pathfinders reproduce their exported results
+ok 39 - all three pathfinders reproduce their exported results
+  ---
+  duration_ms: 33.973346
+  type: 'test'
+  ...
+# Subtest: tampered aggregate does not verify
+ok 40 - tampered aggregate does not verify
+  ---
+  duration_ms: 4.359207
+  type: 'test'
+  ...
+# Subtest: tampered order list does not verify against generation settings
+ok 41 - tampered order list does not verify against generation settings
+  ---
+  duration_ms: 3.102354
+  type: 'test'
+  ...
+# Subtest: tampered routing path does not verify
+ok 42 - tampered routing path does not verify
+  ---
+  duration_ms: 3.36524
+  type: 'test'
+  ...
+# Subtest: tampered settings cannot be mislabeled as original results
+ok 43 - tampered settings cannot be mislabeled as original results
+  ---
+  duration_ms: 8.531743
+  type: 'test'
+  ...
+# Subtest: unsupported report engine is rejected instead of silently substituted
+ok 44 - unsupported report engine is rejected instead of silently substituted
+  ---
+  duration_ms: 2.986319
+  type: 'test'
+  ...
+# Subtest: supplied scenario orders are replayed directly without generation
+ok 45 - supplied scenario orders are replayed directly without generation
+  ---
+  duration_ms: 4.12206
+  type: 'test'
+  ...
+# Subtest: exhaustive 2x2 weighted grids agree with Floyd–Warshall for every walkable pair
+ok 46 - exhaustive 2x2 weighted grids agree with Floyd–Warshall for every walkable pair
+  ---
+  duration_ms: 29.873224
+  type: 'test'
+  ...
+# Subtest: seeded 3x3 disconnected and asymmetric grids agree with independent distance oracle
+ok 47 - seeded 3x3 disconnected and asymmetric grids agree with independent distance oracle
+  ---
+  duration_ms: 37.544091
+  type: 'test'
+  ...
+# Subtest: small constrained matchings agree with independent exhaustive assignment enumeration
+ok 48 - small constrained matchings agree with independent exhaustive assignment enumeration
+  ---
+  duration_ms: 9.808557
+  type: 'test'
+  ...
+# Subtest: pathological demand cannot consume unbounded generator work
+ok 49 - pathological demand cannot consume unbounded generator work
+  ---
+  duration_ms: 37.998695
+  type: 'test'
+  ...
+# Subtest: A* shortest path on empty grid
+ok 50 - A* shortest path on empty grid
+  ---
+  duration_ms: 1.591809
   type: 'test'
   ...
 # Subtest: Dijkstra agrees with A* on empty grid
-ok 2 - Dijkstra agrees with A* on empty grid
+ok 51 - Dijkstra agrees with A* on empty grid
   ---
-  duration_ms: 0.435539
+  duration_ms: 0.313873
   type: 'test'
   ...
 # Subtest: bidirectional agrees with Dijkstra
-ok 3 - bidirectional agrees with Dijkstra
+ok 52 - bidirectional agrees with Dijkstra
   ---
-  duration_ms: 0.651345
+  duration_ms: 0.668467
   type: 'test'
   ...
 # Subtest: weighted detour beats expensive direct route
-ok 4 - weighted detour beats expensive direct route
+ok 53 - weighted detour beats expensive direct route
   ---
-  duration_ms: 0.757125
+  duration_ms: 0.196856
   type: 'test'
   ...
 # Subtest: wall barrier returns no route
-ok 5 - wall barrier returns no route
+ok 54 - wall barrier returns no route
   ---
-  duration_ms: 0.166552
+  duration_ms: 0.1196
   type: 'test'
   ...
 # Subtest: same start goal costs zero
-ok 6 - same start goal costs zero
+ok 55 - same start goal costs zero
   ---
-  duration_ms: 0.100843
+  duration_ms: 0.274123
   type: 'test'
   ...
 # Subtest: reported A* cost matches path
-ok 7 - reported A* cost matches path
+ok 56 - reported A* cost matches path
   ---
-  duration_ms: 0.76667
+  duration_ms: 0.760015
   type: 'test'
   ...
 # Subtest: reported bidirectional cost matches path
-ok 8 - reported bidirectional cost matches path
+ok 57 - reported bidirectional cost matches path
   ---
-  duration_ms: 0.197699
+  duration_ms: 0.207513
   type: 'test'
   ...
 # Subtest: A* and Dijkstra agree across deterministic grids
-ok 9 - A* and Dijkstra agree across deterministic grids
+ok 58 - A* and Dijkstra agree across deterministic grids
   ---
-  duration_ms: 13.774918
+  duration_ms: 12.325508
   type: 'test'
   ...
 # Subtest: bidirectional and Dijkstra agree across deterministic grids
-ok 10 - bidirectional and Dijkstra agree across deterministic grids
+ok 59 - bidirectional and Dijkstra agree across deterministic grids
   ---
-  duration_ms: 3.002963
+  duration_ms: 5.266584
   type: 'test'
   ...
 # Subtest: invalid algorithm rejected
-ok 11 - invalid algorithm rejected
+ok 60 - invalid algorithm rejected
   ---
-  duration_ms: 0.265492
+  duration_ms: 0.316116
   type: 'test'
   ...
 # Subtest: blocked endpoint rejected
-ok 12 - blocked endpoint rejected
+ok 61 - blocked endpoint rejected
   ---
-  duration_ms: 0.114494
+  duration_ms: 0.117217
   type: 'test'
   ...
 # Subtest: distance oracle caches repeated pair
-ok 13 - distance oracle caches repeated pair
+ok 62 - distance oracle caches repeated pair
   ---
-  duration_ms: 0.149346
+  duration_ms: 0.236667
   type: 'test'
   ...
 # Subtest: distance oracle keeps direction-specific keys
-ok 14 - distance oracle keeps direction-specific keys
+ok 63 - distance oracle keeps direction-specific keys
   ---
-  duration_ms: 0.089456
+  duration_ms: 0.109645
   type: 'test'
   ...
 # Subtest: demo scenario parses
-ok 15 - demo scenario parses
+ok 64 - demo scenario parses
   ---
-  duration_ms: 2.125165
+  duration_ms: 3.668226
   type: 'test'
   ...
 # Subtest: demo scenario contains slots
-ok 16 - demo scenario contains slots
+ok 65 - demo scenario contains slots
   ---
-  duration_ms: 0.34414
+  duration_ms: 0.60361
   type: 'test'
   ...
 # Subtest: demo scenario contains SKUs
-ok 17 - demo scenario contains SKUs
+ok 66 - demo scenario contains SKUs
   ---
-  duration_ms: 0.222116
+  duration_ms: 0.738552
   type: 'test'
   ...
 # Subtest: serialize and parse round trip
-ok 18 - serialize and parse round trip
+ok 67 - serialize and parse round trip
   ---
-  duration_ms: 1.590436
+  duration_ms: 2.291312
   type: 'test'
   ...
 # Subtest: scenario rejects bad version
-ok 19 - scenario rejects bad version
+ok 68 - scenario rejects bad version
   ---
-  duration_ms: 0.487337
+  duration_ms: 0.587485
   type: 'test'
   ...
 # Subtest: scenario rejects SKU slot missing from warehouse
-ok 20 - scenario rejects SKU slot missing from warehouse
+ok 69 - scenario rejects SKU slot missing from warehouse
   ---
-  duration_ms: 1.046993
+  duration_ms: 0.811762
   type: 'test'
   ...
 # Subtest: scenario name is bounded
-ok 21 - scenario name is bounded
+ok 70 - scenario name is bounded
   ---
-  duration_ms: 0.326404
+  duration_ms: 6.649087
   type: 'test'
   ...
 # Subtest: scenario may omit explicit orders
-ok 22 - scenario may omit explicit orders
+ok 71 - scenario may omit explicit orders
   ---
-  duration_ms: 0.196708
+  duration_ms: 0.699354
   type: 'test'
   ...
 # Subtest: mean
-ok 23 - mean
+ok 72 - mean
   ---
-  duration_ms: 1.197831
+  duration_ms: 1.349032
   type: 'test'
   ...
 # Subtest: median odd
-ok 24 - median odd
+ok 73 - median odd
   ---
-  duration_ms: 0.188846
+  duration_ms: 0.148474
   type: 'test'
   ...
 # Subtest: median even
-ok 25 - median even
+ok 74 - median even
   ---
-  duration_ms: 0.225271
+  duration_ms: 0.133331
   type: 'test'
   ...
 # Subtest: percentile p95 deterministic nearest-rank
-ok 26 - percentile p95 deterministic nearest-rank
+ok 75 - percentile p95 deterministic nearest-rank
   ---
-  duration_ms: 0.62807
+  duration_ms: 0.106441
   type: 'test'
   ...
 # Subtest: summarize totals
-ok 27 - summarize totals
+ok 76 - summarize totals
   ---
-  duration_ms: 0.261265
+  duration_ms: 0.190887
   type: 'test'
   ...
 # Subtest: comparison evaluates every order
-ok 28 - comparison evaluates every order
+ok 77 - comparison evaluates every order
   ---
-  duration_ms: 4.079721
+  duration_ms: 2.622831
   type: 'test'
   ...
 # Subtest: comparison uses same order ids
-ok 29 - comparison uses same order ids
+ok 78 - comparison uses same order ids
   ---
-  duration_ms: 1.808025
+  duration_ms: 1.742074
   type: 'test'
   ...
 # Subtest: comparison outcome buckets sum to order count
-ok 30 - comparison outcome buckets sum to order count
+ok 79 - comparison outcome buckets sum to order count
   ---
-  duration_ms: 0.778898
+  duration_ms: 1.174058
   type: 'test'
   ...
 # Subtest: suggested layout improves total in deterministic sample
-ok 31 - suggested layout improves total in deterministic sample
+ok 80 - suggested layout improves total in deterministic sample
   ---
-  duration_ms: 1.034745
+  duration_ms: 0.752033
   type: 'test'
   ...
 # Subtest: reduction agrees with totals
-ok 32 - reduction agrees with totals
+ok 81 - reduction agrees with totals
   ---
-  duration_ms: 0.947263
+  duration_ms: 0.627315
   type: 'test'
   ...
 # Subtest: comparison is deterministic
-ok 33 - comparison is deterministic
+ok 82 - comparison is deterministic
   ---
-  duration_ms: 1.617797
+  duration_ms: 1.437616
   type: 'test'
   ...
 # Subtest: Dijkstra and A* comparison totals agree
-ok 34 - Dijkstra and A* comparison totals agree
+ok 83 - Dijkstra and A* comparison totals agree
   ---
-  duration_ms: 1.472397
+  duration_ms: 0.589859
   type: 'test'
   ...
 # Subtest: bidirectional totals agree with Dijkstra
-ok 35 - bidirectional totals agree with Dijkstra
+ok 84 - bidirectional totals agree with Dijkstra
   ---
-  duration_ms: 1.695725
+  duration_ms: 1.885631
   type: 'test'
   ...
 # Subtest: SKU validation preserves rows
-ok 36 - SKU validation preserves rows
+ok 85 - SKU validation preserves rows
   ---
-  duration_ms: 1.238524
+  duration_ms: 1.176172
   type: 'test'
   ...
 # Subtest: SKU validation rejects duplicate ids
-ok 37 - SKU validation rejects duplicate ids
+ok 86 - SKU validation rejects duplicate ids
   ---
-  duration_ms: 0.334146
+  duration_ms: 0.466052
   type: 'test'
   ...
 # Subtest: SKU validation rejects negative picks
-ok 38 - SKU validation rejects negative picks
+ok 87 - SKU validation rejects negative picks
   ---
-  duration_ms: 0.238701
+  duration_ms: 0.167542
   type: 'test'
   ...
 # Subtest: ABC highest activity begins in A
-ok 39 - ABC highest activity begins in A
+ok 88 - ABC highest activity begins in A
   ---
-  duration_ms: 0.307766
+  duration_ms: 0.362687
   type: 'test'
   ...
 # Subtest: ABC assigns every row
-ok 40 - ABC assigns every row
+ok 89 - ABC assigns every row
   ---
-  duration_ms: 0.243419
+  duration_ms: 0.160011
   type: 'test'
   ...
 # Subtest: XYZ threshold X inclusive
-ok 41 - XYZ threshold X inclusive
+ok 90 - XYZ threshold X inclusive
   ---
-  duration_ms: 0.15845
+  duration_ms: 0.127071
   type: 'test'
   ...
 # Subtest: XYZ threshold Y inclusive
-ok 42 - XYZ threshold Y inclusive
+ok 91 - XYZ threshold Y inclusive
   ---
-  duration_ms: 0.210408
+  duration_ms: 0.167793
   type: 'test'
   ...
 # Subtest: XYZ above one is Z
-ok 43 - XYZ above one is Z
+ok 92 - XYZ above one is Z
   ---
-  duration_ms: 0.126611
+  duration_ms: 0.107302
   type: 'test'
   ...
 # Subtest: classification combines ABC and XYZ
-ok 44 - classification combines ABC and XYZ
+ok 93 - classification combines ABC and XYZ
   ---
-  duration_ms: 0.545756
+  duration_ms: 4.632749
   type: 'test'
   ...
 # Subtest: orders are deterministic by seed
-ok 45 - orders are deterministic by seed
+ok 94 - orders are deterministic by seed
   ---
-  duration_ms: 1.828877
+  duration_ms: 1.932742
   type: 'test'
   ...
 # Subtest: different seeds change generated orders
-ok 46 - different seeds change generated orders
+ok 95 - different seeds change generated orders
   ---
-  duration_ms: 0.385504
+  duration_ms: 1.172516
   type: 'test'
   ...
 # Subtest: generated order lines are unique
-ok 47 - generated order lines are unique
+ok 96 - generated order lines are unique
   ---
-  duration_ms: 1.435982
+  duration_ms: 0.853546
   type: 'test'
   ...
 # Subtest: generated max lines respected
-ok 48 - generated max lines respected
+ok 97 - generated max lines respected
   ---
-  duration_ms: 0.269337
+  duration_ms: 0.2852
   type: 'test'
   ...
 # Subtest: order bounds enforced
-ok 49 - order bounds enforced
+ok 98 - order bounds enforced
   ---
-  duration_ms: 0.146722
+  duration_ms: 0.126871
   type: 'test'
   ...
 # Subtest: order validation rejects unknown SKU
-ok 50 - order validation rejects unknown SKU
+ok 99 - order validation rejects unknown SKU
   ---
-  duration_ms: 0.274115
+  duration_ms: 0.244058
   type: 'test'
   ...
 # Subtest: order validation rejects duplicate order ids
-ok 51 - order validation rejects duplicate order ids
+ok 100 - order validation rejects duplicate order ids
   ---
-  duration_ms: 0.175706
+  duration_ms: 0.13881
   type: 'test'
   ...
 # Subtest: compatible slot accepts within bounds
-ok 52 - compatible slot accepts within bounds
+ok 101 - compatible slot accepts within bounds
   ---
-  duration_ms: 1.285925
+  duration_ms: 10.883035
   type: 'test'
   ...
 # Subtest: capacity violation rejected
-ok 53 - capacity violation rejected
+ok 102 - capacity violation rejected
   ---
-  duration_ms: 0.188555
+  duration_ms: 0.136696
   type: 'test'
   ...
 # Subtest: weight violation rejected
-ok 54 - weight violation rejected
+ok 103 - weight violation rejected
   ---
-  duration_ms: 0.181324
+  duration_ms: 0.127993
   type: 'test'
   ...
 # Subtest: zone violation rejected
-ok 55 - zone violation rejected
+ok 104 - zone violation rejected
   ---
-  duration_ms: 0.131739
+  duration_ms: 0.087642
   type: 'test'
   ...
 # Subtest: any zone accepts other SKU zone
-ok 56 - any zone accepts other SKU zone
+ok 105 - any zone accepts other SKU zone
   ---
-  duration_ms: 0.135866
+  duration_ms: 0.087992
   type: 'test'
   ...
 # Subtest: current assignments read SKU slot ids
-ok 57 - current assignments read SKU slot ids
+ok 106 - current assignments read SKU slot ids
   ---
-  duration_ms: 0.312102
+  duration_ms: 0.36517
   type: 'test'
   ...
 # Subtest: optimizer assigns every SKU once
-ok 58 - optimizer assigns every SKU once
+ok 107 - optimizer assigns every SKU once
   ---
-  duration_ms: 2.545651
+  duration_ms: 1.608964
   type: 'test'
   ...
 # Subtest: optimizer keeps cold SKU in cold slot
-ok 59 - optimizer keeps cold SKU in cold slot
+ok 108 - optimizer keeps cold SKU in cold slot
   ---
-  duration_ms: 0.868614
+  duration_ms: 1.492198
   type: 'test'
   ...
 # Subtest: highest activity compatible SKU moves nearest
-ok 60 - highest activity compatible SKU moves nearest
+ok 109 - highest activity compatible SKU moves nearest
   ---
-  duration_ms: 0.827142
+  duration_ms: 0.505091
   type: 'test'
   ...
 # Subtest: optimizer refuses impossible constraints
-ok 61 - optimizer refuses impossible constraints
+ok 110 - optimizer refuses impossible constraints
   ---
-  duration_ms: 0.840552
+  duration_ms: 0.544541
   type: 'test'
   ...
 # Subtest: single-pick route returns depot
-ok 62 - single-pick route returns depot
+ok 111 - single-pick route returns depot
   ---
-  duration_ms: 0.690826
+  duration_ms: 0.733906
   type: 'test'
   ...
 # Subtest: multi-pick route visits every requested SKU
-ok 63 - multi-pick route visits every requested SKU
+ok 112 - multi-pick route visits every requested SKU
   ---
-  duration_ms: 1.842988
+  duration_ms: 1.441
   type: 'test'
   ...
 # Subtest: nearest-next order is deterministic
-ok 64 - nearest-next order is deterministic
+ok 113 - nearest-next order is deterministic
   ---
-  duration_ms: 1.086774
+  duration_ms: 3.373633
   type: 'test'
   ...
 # Subtest: route total cost equals segment sum
-ok 65 - route total cost equals segment sum
+ok 114 - route total cost equals segment sum
   ---
-  duration_ms: 0.450952
+  duration_ms: 0.286682
   type: 'test'
   ...
 # Subtest: missing assignment rejected
-ok 66 - missing assignment rejected
+ok 115 - missing assignment rejected
   ---
-  duration_ms: 0.186231
+  duration_ms: 0.118538
   type: 'test'
   ...
 # Subtest: grid validates and clones cell array
-ok 67 - grid validates and clones cell array
+ok 116 - grid validates and clones cell array
   ---
-  duration_ms: 0.829886
+  duration_ms: 6.611601
   type: 'test'
   ...
 # Subtest: grid rejects bad dimensions
-ok 68 - grid rejects bad dimensions
+ok 117 - grid rejects bad dimensions
   ---
-  duration_ms: 0.238631
+  duration_ms: 0.502427
   type: 'test'
   ...
 # Subtest: grid rejects bad cell values
-ok 69 - grid rejects bad cell values
+ok 118 - grid rejects bad cell values
   ---
-  duration_ms: 0.143597
+  duration_ms: 0.160141
   type: 'test'
   ...
 # Subtest: index and coords round trip
-ok 70 - index and coords round trip
+ok 119 - index and coords round trip
   ---
-  duration_ms: 0.595481
+  duration_ms: 0.676339
   type: 'test'
   ...
 # Subtest: index rejects out of bounds coordinates
-ok 71 - index rejects out of bounds coordinates
+ok 120 - index rejects out of bounds coordinates
   ---
-  duration_ms: 0.141354
+  duration_ms: 0.203767
   type: 'test'
   ...
 # Subtest: neighbors omit wall cells
-ok 72 - neighbors omit wall cells
+ok 121 - neighbors omit wall cells
   ---
-  duration_ms: 0.155295
+  duration_ms: 0.192961
   type: 'test'
   ...
 # Subtest: path cost pays entry cells
-ok 73 - path cost pays entry cells
+ok 122 - path cost pays entry cells
   ---
-  duration_ms: 0.321847
+  duration_ms: 0.19232
   type: 'test'
   ...
 # Subtest: path cost rejects nonadjacent jumps
-ok 74 - path cost rejects nonadjacent jumps
+ok 123 - path cost rejects nonadjacent jumps
   ---
-  duration_ms: 0.115204
+  duration_ms: 0.12618
   type: 'test'
   ...
 # Subtest: warehouse validates slots
-ok 75 - warehouse validates slots
+ok 124 - warehouse validates slots
   ---
-  duration_ms: 0.385353
+  duration_ms: 0.459762
   type: 'test'
   ...
 # Subtest: warehouse rejects depot on wall
-ok 76 - warehouse rejects depot on wall
+ok 125 - warehouse rejects depot on wall
   ---
-  duration_ms: 0.303259
+  duration_ms: 0.314023
   type: 'test'
   ...
 # Subtest: warehouse rejects duplicate slot id
-ok 77 - warehouse rejects duplicate slot id
+ok 126 - warehouse rejects duplicate slot id
   ---
-  duration_ms: 0.3505
+  duration_ms: 0.218148
   type: 'test'
   ...
 # Subtest: warehouse rejects duplicate slot index
-ok 78 - warehouse rejects duplicate slot index
+ok 127 - warehouse rejects duplicate slot index
   ---
-  duration_ms: 0.146432
+  duration_ms: 0.125769
   type: 'test'
   ...
 # Subtest: slotMap indexes by id
-ok 79 - slotMap indexes by id
+ok 128 - slotMap indexes by id
   ---
-  duration_ms: 0.10614
+  duration_ms: 0.105238
   type: 'test'
   ...
-1..79
-# tests 79
+1..128
+# tests 128
 # suites 0
-# pass 79
+# pass 128
 # fail 0
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 160.437346
+# duration_ms 408.826869

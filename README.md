@@ -4,62 +4,87 @@ An end-to-end browser experiment that connects warehouse slotting with multi-sto
 
 **Live demo:** https://dexter02-crypt.github.io/warehouse-flow-simulator/
 
-**Release:** [v1.0.0](https://github.com/dexter02-crypt/warehouse-flow-simulator/releases/tag/v1.0.0)
+**Published reference release:** [v1.0.0](https://github.com/dexter02-crypt/warehouse-flow-simulator/releases/tag/v1.0.0)
 
 ![Warehouse Flow Simulator end-to-end slotting, routing and order simulation](docs/demo.png)
 
+The screenshot records the v1.0 example. The 1.0.1 maintenance candidate adds validation, visible error handling and reproducible reports; the standard seed-42 results remain unchanged. A local candidate is not deployed until its update is committed, pushed and successfully built. The v1.0.0 tag is not moved.
+
 ## What it combines
 
-The project grows out of two focused experiments:
+The project combines concepts from [Warehouse Slotting Lab](https://github.com/dexter02-crypt/warehouse-slotting-lab) and [Route Craft](https://github.com/dexter02-crypt/route-craft-lab). Both remain independent repositories.
 
-- [Warehouse Slotting Lab](https://github.com/dexter02-crypt/warehouse-slotting-lab)
-- [Route Craft](https://github.com/dexter02-crypt/route-craft-lab)
+It validates a warehouse grid and a complete current allocation; classifies SKUs with ABC/XYZ; assigns them to compatible reachable slots; generates or reads an exact order list; routes each multi-stop order with a nearest-next sequence; and compares the same orders before and after slotting. A*, Dijkstra and bidirectional Dijkstra are available. Reported scores are weighted grid-entry costs, not metres, elapsed picking time or money saved.
 
-Those repositories remain independent. This project combines their ideas into a larger system rather than replacing or merging their histories.
+## Run locally
 
-## v1.0 pipeline
-
-1. validate a warehouse grid, depot and storage slots;
-2. classify SKUs with ABC and XYZ labels;
-3. enforce slot capacity, weight and zone constraints;
-4. assign high-activity SKUs to nearer compatible reachable slots;
-5. generate a deterministic order set from a seed;
-6. plan each multi-stop order with a nearest-next sequence;
-7. use shortest-path search between every pick stop;
-8. run the **same orders** against current and suggested slotting;
-9. compare mean, median, P95 and total travel;
-10. report improved, unchanged and worsened orders;
-11. replay one suggested pick route on the warehouse map;
-12. export scenario and simulation reports as JSON.
-
-Routing supports A*, Dijkstra and bidirectional Dijkstra. The default is A*.
-
-## Run
+Python 3.10+ and a modern browser are sufficient. Node.js 22+ is used for tests and report reproduction. No `pip install` or `npm install` is needed.
 
 ```bash
 python3 serve.py
 ```
 
-No package installation is required.
+Keep Terminal running; Ctrl+C stops the loopback server. Use its printed URL rather than opening `index.html` as a file. `--no-open` leaves browser opening to you; `--port 0` selects a free port.
 
-## Tests
+The local server serves only `ASSETS.json` paths, rejects directory listings, hidden files and symlinks, and checks the Host/Origin headers. It is a development server, not a production service. Its response-header policy does not automatically carry over to GitHub Pages.
 
-Node.js 22+:
+## Run the full check
 
 ```bash
-npm test
+python3 -B tools/check.py
 ```
 
-The test suite covers grid validation, routing agreement, slot compatibility, ABC/XYZ classification, deterministic order generation, multi-stop picking, scenario round trips and before/after simulation invariants.
+This verifies the prepared source inventory, syntax-checks JavaScript, runs the actual sorted Node test files with `shell=False`, runs the Python tooling/server tests, then checks the inventory again. An empty test directory or failing test is not accepted as success.
 
-## Scope
+For intentionally edited development source, use `python3 -B tools/check.py --development`. That runs checks without claiming the edited source matches the prepared inventory. Rebuild/review the inventory deliberately before publishing new source; do not remove failing tests or silently bypass the normal release check.
 
-This is a transparent teaching simulator, not a warehouse management system, digital twin or deployable optimization recommendation.
+`npm test` still runs the Node application tests only. The full check also covers the Python tools. The old initial-creation mode `python3 publish.py --public` is retired and refuses without invoking Git or GitHub. This repository already exists; use reviewed ordinary update commits later.
 
-The slotting heuristic assigns higher-activity SKUs first and chooses the nearest unused compatible reachable slot. The multi-stop picking heuristic repeatedly chooses the currently nearest remaining pick. Neither is presented as a globally optimal solution.
+## Error handling and input boundaries
 
-Important effects outside v1.0 include congestion, picker interference, replenishment labor, service-time distributions, one-way aisles, batching/waving policies, equipment reach, dynamic inventory and many facility-specific constraints.
+Settings changes invalidate old simulation metrics and disable report export. Invalid settings or a failed calculation show a visible error; a successful new run restores export. A scenario load/validation failure keeps calculation disabled and offers **Reload scenario** after correction.
+
+Each SKU needs one distinct, compatible, depot-reachable slot. Current and suggested assignments are checked for occupancy, capacity, weight and zone. Slots are walkable **pick-access points**, not physical solid-rack footprints. Sparse arrays, invalid IDs, null/string/boolean numeric inputs, non-finite values and invalid seeds are rejected rather than coerced.
+
+Orders: 1–10,000. Lines per order: 1–25. Seeds: integers 0–4,294,967,295. Grid: up to 48×32. Slots: up to 500. Individual demand/capacity quantities: at most 1e9. Scenario JSON: at most 1 MiB; exported report: at most 16 MiB. See the source and design notes for deterministic work/result bounds. A work-limit error is not a declaration of infeasibility.
+
+The app continues to load `examples/warehouse-scenario.json`; it does not add a general upload form or a graphical layout editor. Exact orders already embedded in that scenario are now honored and generator controls are disabled. Otherwise it uses the displayed seed and settings. Seed 0 is no longer silently aliased to seed 1. Zero-demand SKUs are excluded when any positive demand exists; all-zero demand is sampled uniformly. Under extremely skewed demand, generation either completes the requested distinct lines or returns a clear work-limit error, never a silently shortened order.
+
+## Reproduce an exported result
+
+After a successful run, choose **Export report JSON**. The report contains the model/engine version, full scenario, exact orders, both allocations, settings and computed results, including the first order's paths.
+
+```bash
+node tools/reproduce-report.mjs "$HOME/Downloads/warehouse-flow-report.json"
+```
+
+The command reruns the calculation from the recorded inputs and compares the result. Success includes `"verified": true`. Inconsistent orders, allocations or results cause a nonzero exit. It does not upload or modify the file.
+
+```bash
+node tools/reproduce-demo.mjs
+```
+
+The standard 1,000-order, five-line, seed-42 A* case remains:
+
+| Metric | Current | Suggested |
+|---|---:|---:|
+| Total cost | 44,194 | 37,266 |
+| Mean cost | 44.194 | 37.266 |
+| Median | 46 | 38 |
+| P95 | 52 | 50 |
+
+Outcomes: 786 improved, 134 unchanged, 80 worsened. Modeled reduction: about 15.7%.
+
+Reproduction is **consistency checking, not a signature or proof of authorship**. An internally consistent, deliberately changed scenario can also produce a valid report. The timestamp is not an authenticated timestamp. Legacy v1.0 reports omitted necessary inputs and are not accepted by the new report verifier; regenerate them from a known scenario.
+
+## Model limitations
+
+The activity-first slotter uses nearest compatible reachable slots. When a greedy choice blocks another SKU, an augmenting-path feasibility repair can reassign earlier choices. A complete feasible assignment is not a globally minimum-cost allocation. Nearest-next pick sequencing is also a heuristic; some orders may worsen. Neither method proves operational savings.
+
+The browser yields between batches of 50 orders, but generation, validation and slotting still do bounded work on the main thread. Large/pathological inputs may be refused. There is no multi-picker model, congestion, replenishment labor, one-way aisles, physical equipment geometry or real-world calibration.
+
+See [design](docs/DESIGN.md), [reliability review](docs/RELIABILITY.md) and [validation limits](docs/VALIDATION.md).
 
 ## License
 
-MIT. Maintainer: Shikhar Singh.
+MIT. Maintainer: Shikhar Singh. Third-party platform components retain their licenses; see [THIRD_PARTY.md](THIRD_PARTY.md).
