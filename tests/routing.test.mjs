@@ -1,0 +1,18 @@
+import test from "node:test";import assert from "node:assert/strict";
+import {shortestPath,bidirectionalDijkstra,createDistanceOracle} from "../src/routing/search.js";
+import {pathCost} from "../src/routing/grid.js";
+const map=(w,h,cells)=>({width:w,height:h,cells});
+test("A* shortest path on empty grid",()=>{const g=map(3,3,Array(9).fill(1)),r=shortestPath(g,0,8);assert.equal(r.cost,4);assert.equal(r.path.length,5)});
+test("Dijkstra agrees with A* on empty grid",()=>{const g=map(4,4,Array(16).fill(1));assert.equal(shortestPath(g,0,15).cost,shortestPath(g,0,15,"dijkstra").cost)});
+test("bidirectional agrees with Dijkstra",()=>{const g=map(4,4,Array(16).fill(1));assert.equal(bidirectionalDijkstra(g,0,15).cost,shortestPath(g,0,15,"dijkstra").cost)});
+test("weighted detour beats expensive direct route",()=>{const g=map(4,3,[1,1,1,1,1,6,6,1,1,1,1,1]),r=shortestPath(g,4,7);assert.ok(r.cost<12)});
+test("wall barrier returns no route",()=>{const g=map(3,3,[1,0,1,1,0,1,1,0,1]);assert.equal(shortestPath(g,0,2).found,false)});
+test("same start goal costs zero",()=>assert.equal(shortestPath(map(2,2,[1,1,1,1]),0,0).cost,0));
+test("reported A* cost matches path",()=>{const g=map(5,3,[1,1,3,1,1,1,0,0,0,1,1,1,1,1,1]),r=shortestPath(g,0,14);assert.equal(r.cost,pathCost(g,r.path))});
+test("reported bidirectional cost matches path",()=>{const g=map(5,3,[1,1,3,1,1,1,0,0,0,1,1,1,1,1,1]),r=bidirectionalDijkstra(g,0,14);assert.equal(r.cost,pathCost(g,r.path))});
+test("A* and Dijkstra agree across deterministic grids",()=>{let x=1;for(let k=0;k<30;k++){const cells=Array.from({length:60},()=>{x=(Math.imul(x,1664525)+1013904223)>>>0;return [0,1,1,1,3,6][x%6]});cells[0]=cells[59]=1;const g=map(10,6,cells);assert.equal(shortestPath(g,0,59).cost,shortestPath(g,0,59,"dijkstra").cost)}});
+test("bidirectional and Dijkstra agree across deterministic grids",()=>{let x=9;for(let k=0;k<25;k++){const cells=Array.from({length:48},()=>{x=(Math.imul(x,1103515245)+12345)>>>0;return [0,1,1,1,3][x%5]});cells[0]=cells[47]=1;const g=map(8,6,cells);assert.equal(bidirectionalDijkstra(g,0,47).cost,shortestPath(g,0,47,"dijkstra").cost)}});
+test("invalid algorithm rejected",()=>assert.throws(()=>shortestPath(map(2,2,[1,1,1,1]),0,3,"greedy")));
+test("blocked endpoint rejected",()=>assert.throws(()=>shortestPath(map(2,2,[0,1,1,1]),0,3)));
+test("distance oracle caches repeated pair",()=>{const o=createDistanceOracle(map(3,3,Array(9).fill(1)));o.get(0,8);o.get(0,8);assert.equal(o.cacheSize(),1)});
+test("distance oracle keeps direction-specific keys",()=>{const o=createDistanceOracle(map(3,3,Array(9).fill(1)));o.get(0,8);o.get(8,0);assert.equal(o.cacheSize(),2)});

@@ -1,0 +1,1 @@
+export function compatibleSkuSlot(sku,slot){if(!sku||!slot)throw new Error("compatibility");return Number(sku.size)<=Number(slot.capacity)&&Number(sku.weight)<=Number(slot.maxWeight)&&(slot.zone==="any"||String(sku.zone)===String(slot.zone));}

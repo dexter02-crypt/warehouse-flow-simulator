@@ -1,0 +1,18 @@
+import test from "node:test";import assert from "node:assert/strict";
+import {validateGrid,indexOf,coordsOf,neighbors,pathCost} from "../src/routing/grid.js";
+import {validateWarehouse,slotMap} from "../src/domain/warehouse.js";
+const grid={width:3,height:3,cells:[1,1,1,1,0,1,1,1,1]};
+const wh={grid,depot:0,slots:[{id:"S1",index:2,zone:"ambient",capacity:2,maxWeight:5},{id:"S2",index:8,zone:"cold",capacity:1,maxWeight:2}]};
+test("grid validates and clones cell array",()=>{const g=validateGrid(grid);g.cells[0]=0;assert.equal(grid.cells[0],1)});
+test("grid rejects bad dimensions",()=>assert.throws(()=>validateGrid({width:1,height:3,cells:[1,1,1]})));
+test("grid rejects bad cell values",()=>assert.throws(()=>validateGrid({width:2,height:2,cells:[1,2,1,1]})));
+test("index and coords round trip",()=>{const i=indexOf(grid,2,1);assert.deepEqual(coordsOf(grid,i),{x:2,y:1})});
+test("index rejects out of bounds coordinates",()=>assert.throws(()=>indexOf(grid,4,0)));
+test("neighbors omit wall cells",()=>assert.deepEqual(neighbors(grid,1).sort((a,b)=>a-b),[0,2]));
+test("path cost pays entry cells",()=>assert.equal(pathCost(grid,[0,1,2]),2));
+test("path cost rejects nonadjacent jumps",()=>assert.throws(()=>pathCost(grid,[0,2])));
+test("warehouse validates slots",()=>assert.equal(validateWarehouse(wh).slots.length,2));
+test("warehouse rejects depot on wall",()=>assert.throws(()=>validateWarehouse({...wh,depot:4})));
+test("warehouse rejects duplicate slot id",()=>assert.throws(()=>validateWarehouse({...wh,slots:[wh.slots[0],{...wh.slots[1],id:"S1"}]})));
+test("warehouse rejects duplicate slot index",()=>assert.throws(()=>validateWarehouse({...wh,slots:[wh.slots[0],{...wh.slots[1],index:2}]})));
+test("slotMap indexes by id",()=>assert.equal(slotMap(wh).get("S2").zone,"cold"));

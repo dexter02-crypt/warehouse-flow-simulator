@@ -1,0 +1,11 @@
+import test from "node:test";import assert from "node:assert/strict";import fs from "node:fs";
+import {parseScenario,serializeScenario,validateScenario} from "../src/io/scenario.js";
+const text=fs.readFileSync(new URL("../examples/warehouse-scenario.json",import.meta.url),"utf8");
+test("demo scenario parses",()=>assert.equal(parseScenario(text).version,1));
+test("demo scenario contains slots",()=>assert.ok(parseScenario(text).warehouse.slots.length>=10));
+test("demo scenario contains SKUs",()=>assert.ok(parseScenario(text).skus.length>=10));
+test("serialize and parse round trip",()=>{const a=parseScenario(text),b=parseScenario(serializeScenario(a));assert.deepEqual(b,a)});
+test("scenario rejects bad version",()=>{const a=parseScenario(text);assert.throws(()=>validateScenario({...a,version:2}))});
+test("scenario rejects SKU slot missing from warehouse",()=>{const a=parseScenario(text);a.skus[0].slotId="NOPE";assert.throws(()=>validateScenario(a))});
+test("scenario name is bounded",()=>{const a=parseScenario(text);a.name="x".repeat(300);assert.equal(validateScenario(a).name.length,120)});
+test("scenario may omit explicit orders",()=>assert.equal(parseScenario(text).orders,null));
