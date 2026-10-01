@@ -2,6 +2,12 @@
 
 An end-to-end browser experiment that connects warehouse slotting with multi-stop order picking and shortest-path routing.
 
+**Live demo:** https://dexter02-crypt.github.io/warehouse-flow-simulator/
+
+**Release:** [v1.0.0](https://github.com/dexter02-crypt/warehouse-flow-simulator/releases/tag/v1.0.0)
+
+![Warehouse Flow Simulator end-to-end slotting, routing and order simulation](docs/demo.png)
+
 ## What it combines
 
 The project grows out of two focused experiments:
