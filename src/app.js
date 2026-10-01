@@ -1,24 +1,35 @@
 import { parseScenario, serializeScenario } from './io/scenario.js';
 import { createReport, serializeReport } from './io/report.js';
+import { createRobustnessReport, serializeRobustnessReport } from './io/robustness-report.js';
 import { classifySkus } from './domain/sku.js';
 import { generateOrders, validateOrderConfig, GENERATOR } from './domain/orders.js';
 import { currentAssignments, optimizeSlotting } from './slotting/optimizer.js';
 import { compareLayoutsAsync } from './simulation/compare.js';
+import { analyzeRobustnessAsync, validateRobustnessConfig } from './simulation/robustness.js';
 import { LIMITS } from './common/validation.js';
 
 const $ = id => document.getElementById(id);
 const NS = 'http://www.w3.org/2000/svg';
-let scenario = null, optimized = null, lastReport = null, busy = false;
+let scenario = null, optimized = null, lastReport = null, lastRobustnessReport = null, busy = false;
 const controls = ['orderCount', 'maxLines', 'seed', 'algorithm'];
 function message(text, kind = '') { $('status').textContent = text; $('status').className = 'status ' + kind; }
+function clearRobustnessResults() {
+  lastRobustnessReport = null; $('exportRobustness').disabled = true;
+  for (const id of ['robustnessMean', 'robustnessMedian', 'robustnessRange', 'robustnessOutcomes']) $(id).textContent = '—';
+  $('robustnessMean').className = 'metric'; $('robustnessMedian').className = 'metric';
+  $('robustnessTable').replaceChildren();
+}
 function clearResults(text = 'Settings changed. Run again to calculate current results.') {
   lastReport = null; $('exportReport').disabled = true;
   for (const id of ['avg', 'median', 'p95', 'reduction', 'outcomes']) $(id).textContent = '—';
   $('reduction').className = 'metric'; $('orderTable').replaceChildren(); $('replayMap').replaceChildren();
-  $('replayText').textContent = 'No completed result for the current settings.'; message(text);
+  $('replayText').textContent = 'No completed result for the current settings.';
+  clearRobustnessResults(); message(text);
 }
 function setBusy(value) {
-  busy = value; $('run').disabled = value || !scenario; $('reload').disabled = value;
+  busy = value; $('run').disabled = value || !scenario;
+  $('runRobustness').disabled = value || !scenario || !!scenario?.orders;
+  $('reload').disabled = value; $('robustnessRuns').disabled = value || !!scenario?.orders;
   for (const id of controls) $(id).disabled = value || (!!scenario?.orders && id !== 'algorithm');
 }
 function download(name, value) {
@@ -72,8 +83,14 @@ function renderStatic() {
   for (const c of ['A', 'B', 'C']) $(c.toLowerCase() + 'Count').textContent = cls.filter(s => s.abc === c).length;
   renderRows($('slotTable'), optimized.details.map(d => [d.sku, d.abc + d.xyz, details.get(d.sku).slotId, d.slotId, d.distance]));
   $('slottingNote').textContent = optimized.repairUsed ? 'A feasibility reassignment was required. This is not a global cost optimum.' : 'Activity-first feasible assignment. Lower total picking cost is not guaranteed.';
-  if (scenario.orders) { $('orderCount').value = scenario.orders.length; $('orderSource').textContent = 'Using the exact orders embedded in this scenario; generator controls are disabled.'; }
-  else $('orderSource').textContent = 'Same seeded order list before and after. Seed 0 is supported; zero-demand SKUs are excluded unless all demand is zero.';
+  if (scenario.orders) {
+    $('orderCount').value = scenario.orders.length;
+    $('orderSource').textContent = 'Using the exact orders embedded in this scenario; generator controls are disabled.';
+    $('robustnessSource').textContent = 'Multi-seed analysis is unavailable because this scenario contains fixed orders.';
+  } else {
+    $('orderSource').textContent = 'Same seeded order list before and after. Seed 0 is supported; zero-demand SKUs are excluded unless all demand is zero.';
+    $('robustnessSource').textContent = 'Consecutive deterministic seeds vary the generated order sample; this is sensitivity analysis, not a forecast.';
+  }
   $('exportScenario').disabled = false;
 }
 function controlInteger(id, name) {
@@ -113,12 +130,54 @@ async function runSimulation() {
   } catch (error) { clearResults(`Simulation stopped: ${error.message || String(error)}`); $('status').className = 'status error'; }
   finally { setBusy(false); }
 }
+async function runRobustness() {
+  if (busy || !scenario || scenario.orders) return;
+  clearRobustnessResults(); message('Validating robustness settings…'); setBusy(true);
+  try {
+    const algorithm = $('algorithm').value;
+    const settings = validateOrderConfig({ count: controlInteger('orderCount', 'Orders'),
+      seed: controlInteger('seed', 'Seed'), maxLines: controlInteger('maxLines', 'Max lines') });
+    const robustnessConfig = validateRobustnessConfig({
+      runs: controlInteger('robustnessRuns', 'Robustness seeds')
+    });
+    const curr = currentAssignments(scenario.skus);
+    optimized = optimizeSlotting(scenario.warehouse, scenario.skus, { algorithm }); renderStatic();
+    const result = await analyzeRobustnessAsync(
+      scenario.warehouse, scenario.skus, curr, optimized.assignments, settings,
+      { ...robustnessConfig, algorithm, onProgress: event => {
+        if (event.complete) message(`Completed seed ${event.seedIndex} of ${event.seedCount} (seed ${event.seed}).`);
+        else message(`Seed ${event.seedIndex}/${event.seedCount} · order ${event.ordersDone}/${event.orderCount}…`);
+      } }
+    );
+    const capture = createRobustnessReport({
+      scenario, current: curr, suggested: optimized.assignments, result, orderConfig: settings, robustnessConfig
+    });
+    serializeRobustnessReport(capture);
+    const pct = value => `${(100 * value).toFixed(1)}%`;
+    $('robustnessMean').textContent = pct(result.meanReduction);
+    $('robustnessMedian').textContent = pct(result.medianReduction);
+    $('robustnessRange').textContent = `${pct(result.minReduction)} → ${pct(result.maxReduction)}`;
+    $('robustnessOutcomes').textContent = `${result.positiveSeeds} · ${result.zeroSeeds} · ${result.negativeSeeds}`;
+    $('robustnessMean').className = 'metric ' + (result.meanReduction < 0 ? 'warning' : 'good');
+    $('robustnessMedian').className = 'metric ' + (result.medianReduction < 0 ? 'warning' : 'good');
+    renderRows($('robustnessTable'), result.perSeed.map(run => [
+      run.seed, run.beforeTotal, run.afterTotal, pct(run.reduction),
+      `${run.improved} · ${run.unchanged} · ${run.worsened}`
+    ]));
+    lastRobustnessReport = capture; $('exportRobustness').disabled = false;
+    message(`Completed ${result.runs} deterministic seeds covering ${result.totalOrders} sampled orders.`, 'success');
+  } catch (error) {
+    clearRobustnessResults();
+    message(`Robustness analysis stopped: ${error.message || String(error)}`, 'error');
+  } finally { setBusy(false); }
+}
+
 async function loadScenario() {
   if (busy) return;
   clearResults('Loading and validating scenario…'); scenario = null; optimized = null;
   $('exportScenario').disabled = true; setBusy(true);
   for (const id of ['currentMap', 'suggestedMap', 'slotTable']) $(id).replaceChildren();
-  for (const id of ['scenarioName', 'scenarioStats', 'aCount', 'bCount', 'cCount', 'slottingNote', 'orderSource']) $(id).textContent = '—';
+  for (const id of ['scenarioName', 'scenarioStats', 'aCount', 'bCount', 'cCount', 'slottingNote', 'orderSource', 'robustnessSource']) $(id).textContent = '—';
   try {
     const response = await fetch('./examples/warehouse-scenario.json');
     if (!response.ok) throw new Error(`Scenario request failed (HTTP ${response.status}).`);
@@ -132,12 +191,21 @@ async function loadScenario() {
   if (scenario) await runSimulation();
 }
 $('run').onclick = runSimulation;
+$('runRobustness').onclick = runRobustness;
 $('reload').onclick = loadScenario;
 for (const id of controls) { $(id).addEventListener('input', () => clearResults()); $(id).addEventListener('change', () => clearResults()); }
+for (const event of ['input', 'change']) $('robustnessRuns').addEventListener(event, () => {
+  clearRobustnessResults(); message('Robustness seed count changed. Run robustness analysis again.');
+});
 $('exportReport').onclick = () => {
   if (!lastReport) return;
   try { download('warehouse-flow-report.json', serializeReport(lastReport)); }
   catch (e) { clearResults(`Export failed: ${e.message}`); }
+};
+$('exportRobustness').onclick = () => {
+  if (!lastRobustnessReport) return;
+  try { download('warehouse-flow-robustness-report.json', serializeRobustnessReport(lastRobustnessReport)); }
+  catch (e) { clearRobustnessResults(); message(`Robustness export failed: ${e.message}`, 'error'); }
 };
 $('exportScenario').onclick = () => {
   if (!scenario) return;

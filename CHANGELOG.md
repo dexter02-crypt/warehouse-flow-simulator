@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.1.0 — feature candidate, 2026-10-01
+
+- Added bounded deterministic multi-seed robustness analysis for generated-order scenarios.
+- Added 2–20 consecutive-seed runs with a maximum of 20,000 sampled orders across the analysis.
+- Added mean, median, minimum and maximum modeled reduction plus positive/zero/negative seed outcomes and per-seed totals.
+- Added reproducible robustness reports and `tools/reproduce-robustness.mjs`; changed settings or results fail recomputation.
+- Added browser controls, results, per-seed table and robustness JSON export.
+- Preserved the v1.0.1 single-run report contract and the historical seed-42 reference.
+
 ## 1.0.1 — maintenance candidate, 2026-10-01
 
 - Replaced the false-success publisher test invocation with explicit test filenames, no shell and failure propagation; retired initial repository creation.

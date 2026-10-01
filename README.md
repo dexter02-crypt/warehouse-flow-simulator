@@ -4,11 +4,11 @@ An end-to-end browser experiment that connects warehouse slotting with multi-sto
 
 **Live demo:** https://dexter02-crypt.github.io/warehouse-flow-simulator/
 
-**Published reference release:** [v1.0.0](https://github.com/dexter02-crypt/warehouse-flow-simulator/releases/tag/v1.0.0)
+**Latest published release:** [v1.0.1](https://github.com/dexter02-crypt/warehouse-flow-simulator/releases/tag/v1.0.1)
 
 ![Warehouse Flow Simulator end-to-end slotting, routing and order simulation](docs/demo.png)
 
-The screenshot records the v1.0 example. The 1.0.1 maintenance candidate adds validation, visible error handling and reproducible reports; the standard seed-42 results remain unchanged. A local candidate is not deployed until its update is committed, pushed and successfully built. The v1.0.0 tag is not moved.
+The screenshot records the original v1.0 example. The v1.0.1 maintenance release strengthened validation, bounded work, error handling and reproducible single-run reports while retaining the standard seed-42 result. The current v1.1.0 feature candidate adds bounded multi-seed robustness analysis. A local candidate is not deployed until it is reviewed, committed, pushed and successfully built.
 
 ## What it combines
 
@@ -76,6 +76,18 @@ The standard 1,000-order, five-line, seed-42 A* case remains:
 Outcomes: 786 improved, 134 unchanged, 80 worsened. Modeled reduction: about 15.7%.
 
 Reproduction is **consistency checking, not a signature or proof of authorship**. An internally consistent, deliberately changed scenario can also produce a valid report. The timestamp is not an authenticated timestamp. Legacy v1.0 reports omitted necessary inputs and are not accepted by the new report verifier; regenerate them from a known scenario.
+
+## Reproduce a robustness report
+
+After a successful robustness run, choose **Export robustness JSON**.
+
+```bash
+node tools/reproduce-robustness.mjs "$HOME/Downloads/warehouse-flow-robustness-report.json"
+```
+
+The verifier regenerates every recorded seed with the deterministic order generator, recomputes every before/after comparison and checks both aggregate and per-seed results. Changed seed settings, assignments or results fail verification.
+
+Multi-seed robustness analysis uses 2–20 consecutive deterministic seeds and is limited to 20,000 sampled orders across all seeds. It measures sensitivity inside this simulator; it is not a confidence interval, future-demand probability or real-world savings estimate.
 
 ## Model limitations
 

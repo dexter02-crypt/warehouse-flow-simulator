@@ -1,22 +1,29 @@
-# Validation — 1.0.1 maintenance candidate
+# Validation — 1.1.0 feature candidate
 
-## Executed checks
+## Executed local checks
 
-- **128 Node test methods**, including the exact 79 original tests and 49 new reliability methods. Zero skipped.
-- **30 Python tooling/server tests**. These include deliberately failing/passing Node subprocess fixtures and real loopback HTTP requests. Zero skipped.
-- Routing tests include 7,488 comparisons on every 2×2 grid over {wall,1,3,6} and every walkable endpoint pair, plus 100 seeded 3×3 grids, against an independent Floyd–Warshall implementation.
-- Assignment tests compare 256 small constrained cases against independent exhaustive permutation feasibility.
-- The standard 1,000-order case was recomputed, exported from the actual browser application, and reproduced by the Node report CLI.
-- The separate delivery review used 38 in-memory Chromium assertions: normal/invalid input, stale-export prevention, error recovery, literal labels, three pathfinders, seed 0, supplied orders, 10,000-order completion, and phone-width overflow.
+- **150 JavaScript tests** passed with zero failures and zero skips.
+- **30 Python tooling/server tests** passed.
+- Robustness-core tests cover deterministic consecutive seeds, uint32 wraparound, workload limits, synchronous/asynchronous equivalence, progress reporting and pathfinder total agreement.
+- Robustness-report tests cover complete recomputation plus rejection of altered aggregates, altered per-seed results, changed starting seed, unsupported engine, fixed-order scenarios and mismatched current assignments.
+- The actual robustness CLI successfully reproduced an exported browser report containing 5 seeds / 5,000 sampled orders.
+- The exported browser report verified with engine version 1.1.0, A*, mean modeled reduction 15.4872%, median 15.5409%, minimum 15.1899%, maximum 15.6763%, and five positive seed outcomes.
+- The historical standard 1,000-order seed-42 single-run result remains 44,194 current versus 37,266 suggested.
 
-Node.js 22.16.0 / Python 3.13.5 / Chromium 144.0.7559.96 were available in the Linux validation environment. `docs/test-output.txt` records one executed Node suite; variable timing lines are not speed claims.
+These checks are finite regression and consistency evidence, not proof for every warehouse configuration or evidence of real operational savings.
 
-## Browser limitations
+## Browser evidence and remaining browser gate
 
-The environment refused browser navigation to localhost with `ERR_BLOCKED_BY_ADMINISTRATOR`. It was not bypassed. The DOM tests instead loaded the real HTML/CSS and native ES modules in memory, resolving relative modules to blob URLs and mocking only the initial scenario JSON fetch. Actual browser downloads were recomputed with the independent report CLI. This does not verify localhost-origin/CSP behavior, GitHub Pages delivery, Safari, Brave on the user's Mac, or the full deployed request chain.
+On the user's Mac, the v1.1 local server started successfully, the browser produced a five-seed robustness export, and that downloaded file was independently reproduced by the Node CLI.
 
-The Python server tests used real HTTP requests independently of that harness. They do not replace an integrated real-browser check.
+The pasted evidence does not yet establish the separate stale-state observation after changing the robustness seed count from 5 to 6. Before publication, confirm that the old robustness metrics/table clear and robustness export becomes disabled.
 
-## Release boundaries
+The Python server tests independently exercise loopback HTTP behavior, allowlisted assets, Host/Origin checks, path traversal refusal, symlink refusal and non-writing POST behavior. They do not replace browser interaction checks.
 
-The repair has not been pushed, retagged or deployed by the review. CI configuration is prepared to run the full check after a separately approved commit. The v1.0 screenshot/release remain historical artifacts. Finite regression tests are not proof that every scenario is correct, a performance benchmark or production approval.
+## Interpretation boundary
+
+The robustness feature measures sensitivity to several deterministic generated order samples. It is not a confidence interval, probability of future savings, calibrated demand forecast or production warehouse recommendation.
+
+## Publication boundary
+
+At this stage, local feature work does not establish remote feature-branch publication, pull-request creation, merge, v1.1.0 tag creation, GitHub release publication, post-merge CI success or post-merge Pages deployment. Those states require separate evidence against the exact commit involved.
